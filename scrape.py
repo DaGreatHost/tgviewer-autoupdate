@@ -1,3 +1,4 @@
+
 import requests
 from bs4 import BeautifulSoup
 import json
@@ -22,7 +23,11 @@ for msg in soup.select(".tgme_widget_message"):
         media_url = media["src"]
 
     caption = caption_elem.text.strip() if caption_elem else ""
-    timestamp = time_elem["datetime"] if time_elem else datetime.now().isoformat()
+
+    if time_elem and time_elem.has_attr("datetime"):
+        timestamp = time_elem["datetime"]
+    else:
+        timestamp = datetime.now().isoformat()
 
     if media_url:
         posts.append({
@@ -33,3 +38,5 @@ for msg in soup.select(".tgme_widget_message"):
 
 with open("feed.json", "w") as f:
     json.dump(posts, f, indent=2)
+
+print(f"✅ Successfully scraped {len(posts)} posts.")
